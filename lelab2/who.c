@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <asm/segment.h>
 
-char msg[24]  /* 23个字符*/
+char msg[24]；  /* 23个字符*/
 
 
 /*functiom:首先，从用户态获得到agrv[1]的信息，并且拷贝在msg上
