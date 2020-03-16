@@ -119,7 +119,7 @@ void schedule(void)
 			{								 /* 就把任务置为 就绪 状态 在if下*/
 				(*p)->state=TASK_RUNNING;
 				/*p进入就绪状态*/
-				fprintk(3, "%ld\t%c\t%ld\n", p->pid, 'J', jiffies);
+				fprintk(3, "%ld\t%c\t%ld\n",(*p)->pid, 'J', jiffies);
 			}
 		}
 
@@ -150,7 +150,7 @@ void schedule(void)
 		{
 			fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'J', jiffies);
 		}
-		fprintk(3, "%ld\t%c\t%ld\n", task[next]->pid->pid, 'R', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n", task[next]->pid, 'R', jiffies);
 	}
 	switch_to(next);
 }

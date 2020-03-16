@@ -135,16 +135,16 @@ void start(void)		/* This really IS void, no error here. */
 	floppy_init();
 	sti();
 	move_to_user_mode();
+	/*
+	*main中打开process.log文件
+	*/
+	setup((void *) &drive_info);
+	(void) open("/dev/tty0",O_RDWR,0);
+	(void) dup(0);
+	(void) dup(0);
+	(void) open("/var/process.log",O_CREAT|O_TRUNC|O_WRONLY,0666);
 	if (!fork()) {		/* we count on this going ok */
-
-	/*修改区域=========================*/
-	setup((void *) &drive_info);        //加载文件系统
-	(void) open("/dev/tty0",O_RDWR,0);    //打开/dev/tty0，建立文件描述符0和/dev/tty0的关联
-	(void) dup(0);                //让文件描述符1也和/dev/tty0关联
-	(void) dup(0);                //让文件描述符2也和/dev/tty0关联
-
-	/*修改区域=========================*/
-	init();
+		init();
 	}
 /*
  *   NOTE!!   For any other task 'pause()' would mean we have to get a

@@ -11,7 +11,8 @@
  */
 #include <stdarg.h>
 #include <stddef.h>
-
+#include <linux/sched.h>
+#include <sys/stat.h>
 #include <linux/kernel.h>
 
 static char buf[1024];
