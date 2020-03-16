@@ -92,7 +92,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->start_time = jiffies;
 
 	/*增加p新建状态*/
-	fprintk(3, "%ld\t%c\t%ld\n", p->pid, 'N', jiffies);
+	fprintk(3, "%ld\t%c\t%ld\n",p->pid, 'N',jiffies);
 	p->tss.back_link = 0;
 	p->tss.esp0 = PAGE_SIZE + (long) p;
 	p->tss.ss0 = 0x10;
@@ -135,7 +135,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->state = TASK_RUNNING;	/* do this last, just in case */
 
 	/*增加p就绪状态*/
-	fprintk(3, "%ld\t%c\t%ld\n", p->pid, 'J', jiffies);
+	fprintk(3, "%ld\t%c\t%ld\n",p->pid, 'J',jiffies);
 	return last_pid;
 }
 

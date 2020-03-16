@@ -9,7 +9,7 @@ void cpuio_bound(int last, int cpu_time, int io_time);
 
 int main(int argc, char * argv[])
 {
-	int n_process[10];
+	pid_t n_process[10];
 	int i;
 	pid_t pid;
 	for(i=0;i<10;i++)
@@ -18,6 +18,7 @@ int main(int argc, char * argv[])
 		   if（pid<0）
 		     {
 				 printf("error");
+				 return -1;
 			 }
 			 else
 			 {

@@ -119,7 +119,7 @@ void schedule(void)
 			{								 /* 就把任务置为 就绪 状态 在if下*/
 				(*p)->state=TASK_RUNNING;
 				/*p进入就绪状态*/
-				fprintk(3, "%ld\t%c\t%ld\n",(*p)->pid, 'J', jiffies);
+				fprintk(3, "%ld\t%c\t%ld\n",(*p)->pid,'J',jiffies);
 			}
 		}
 
@@ -148,9 +148,9 @@ void schedule(void)
 	{
 		if(current->state == TASK_RUNNING)
 		{
-			fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'J', jiffies);
+			fprintk(3, "%ld\t%c\t%ld\n",current->pid, 'J',jiffies);
 		}
-		fprintk(3, "%ld\t%c\t%ld\n", task[next]->pid, 'R', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n", task[next]->pid, 'R',jiffies);
 	}
 	switch_to(next);
 }
@@ -167,7 +167,7 @@ int sys_pause(void)
 	直到收到一个用于终止进程或者促使进程调用的信号量。然而这些功能在0.11版本内核中没有没实现。
 	*/
 	if(current->pid!=0)
-	fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'W', jiffies);
+	fprintk(3, "%ld\t%c\t%ld\n",current->pid, 'W',jiffies);
 	schedule();
 	return 0;
 }
@@ -184,14 +184,14 @@ void sleep_on(struct task_struct **p)
 	*p = current;
 	current->state = TASK_UNINTERRUPTIBLE;
 	/*current进入阻塞状态*/
-	fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'W', jiffies);
+	fprintk(3, "%ld\t%c\t%ld\n",current->pid, 'W',jiffies);
 	schedule();
 	/*唤醒以后从这里执行*/
 	if (tmp)
 		{
 		tmp->state=0;
 		/*tmp被唤醒 进入就绪态*/
-		fprintk(3, "%ld\t%c\t%ld\n", tmp->pid, 'J', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n",tmp->pid, 'J',jiffies);
 		}
 }
 
@@ -207,13 +207,13 @@ void interruptible_sleep_on(struct task_struct **p)
 	*p=current;
 repeat:	current->state = TASK_INTERRUPTIBLE;
 	/*current进入阻塞状态*/
-    fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'W', jiffies);
+    fprintk(3, "%ld\t%c\t%ld\n",current->pid, 'W',jiffies);
 	schedule(); 	
 	/*唤醒以后从这里执行*/
 	if (*p && *p != current) {/*因为是interruptible，唤醒的时候 可能不在队首，下面一句判断是不是信号唤醒 也就是是不是队首*/
 		(**p).state=0;
 		/*如果不是队首，即 从中间唤醒的话，唤醒队首p，自己睡眠*/
-		fprintk(3, "%ld\t%c\t%ld\n", (*p)->pid, 'J', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n",(*p)->pid, 'J',jiffies);
 		goto repeat;
 	}
 	*p=NULL;
@@ -221,7 +221,7 @@ repeat:	current->state = TASK_INTERRUPTIBLE;
 		{
 			tmp->state=0;
 		/*tmp被唤醒 进入就绪态*/
-		fprintk(3, "%ld\t%c\t%ld\n", tmp->pid, 'J', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n",tmp->pid, 'J',jiffies);
 		}
 }
 /*wakeup只唤醒队首，其他交由sleep隐式链表去唤醒*/
@@ -230,7 +230,7 @@ void wake_up(struct task_struct **p)
 	if (p && *p) {
 		(**p).state=0;
 		/*唤醒进入就绪状态*/
-		fprintk(3, "%ld\t%c\t%ld\n", (*p)->pid, 'J', jiffies);
+		fprintk(3, "%ld\t%c\t%ld\n",(*p)->pid, 'J',jiffies);
 		*p=NULL;
 	}
 }
