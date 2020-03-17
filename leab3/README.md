@@ -1,5 +1,5 @@
 #关于exit、fork、printk、sched
-
+------
  + 直接将三个文件替换到kernel里的文件即可.
  + 若是想要对比在哪插入了N,J,R,W,E可以用[VSCODE](https://code.visualstudio.com) 进行compare selected进行对比。
 
