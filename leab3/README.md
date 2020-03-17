@@ -24,7 +24,7 @@
    ```
   +运行完上述以后，可以在在hdc/var下看到process.log，最好复制出来，我这边复制到oslab下，并且将stat_log.py一起放再oslab下。
        之后再oslab下的路径下，输入  
-   ```shell
+   ```
    ./stat_log.py  ./process.log
    ```
    +具体情况，该py文件会统计，（当然你也可以自己搞）。
