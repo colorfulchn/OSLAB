@@ -13,10 +13,11 @@
 #关于process
   -------------
   +建议把process.c放在hdc/usr/root里面，这样可以直接在boch下直接编译，即输入
-    ``` shell
-    gcc process.c -o process
+  ```shell
+  gcc process.c -o process
     ./process
-    ```
+```
+
   +当然不要忘记在编译运行之后将文件同步到里面。
    ```shell
    sync
