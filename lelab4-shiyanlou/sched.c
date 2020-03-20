@@ -139,7 +139,7 @@ void schedule(void)
 				(*p)->counter = ((*p)->counter >> 1) +
 						(*p)->priority;
 	}
-	switch_to(pnext,LDT(next);
+	switch_to(pnext, _LDT(next));
 }
 
 int sys_pause(void)
