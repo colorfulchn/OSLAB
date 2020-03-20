@@ -1,4 +1,4 @@
-	/*
+/*
  *  linux/kernel/sched.c
  *
  *  (C) 1991  Linus Torvalds
@@ -106,7 +106,6 @@ void schedule(void)
 	int i,next,c;
 	struct task_struct ** p;
 	struct task_struct *pnext = &(init_task.task); 
-
 /* check alarm, wake up any interruptible tasks that have got a signal */
 
 	for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
@@ -116,8 +115,12 @@ void schedule(void)
 					(*p)->alarm = 0;
 				}
 			if (((*p)->signal & ~(_BLOCKABLE & (*p)->blocked)) &&
-			(*p)->state==TASK_INTERRUPTIBLE)
+			(*p)->state==TASK_INTERRUPTIBLE) /*如果信号位图中除了被阻塞的信号以外还有其他信号，并且任务处于可中断状态  */
+			{								 /* 就把任务置为 就绪 状态 在if下*/
 				(*p)->state=TASK_RUNNING;
+				/*p进入就绪状态*/
+				fprintk(3,"%d\tJ\t%d\n",(*p)->pid,jiffies);
+			}
 		}
 
 /* this is the scheduler proper: */
@@ -125,19 +128,30 @@ void schedule(void)
 	while (1) {
 		c = -1;
 		next = 0;
+		pnext=task[next];
 		i = NR_TASKS;
 		p = &task[NR_TASKS];
-		while (--i) {
+		while (--i) {/*--i 和--p遍历整个任务表 遇到不存在的程序continue跳过，存在的用c和next保存*/ 
 			if (!*--p)
 				continue;
 			if ((*p)->state == TASK_RUNNING && (*p)->counter > c)
 				c = (*p)->counter, next = i, pnext = *p;
 		}
-		if (c) break;
-		for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
-			if (*p)
+		if (c) break;/*如果找到了，则break 且switch，如果所有就绪态的counter全用完了 及c=0那么进入下面的for*/
+		for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)  /*就绪态就重新把priority（初值）赋给counter*/
+			if (*p)					 /*对于进行过IO的进程，其counter/2+初值 肯定比就绪态的counter大，实现其在就绪态之后*/
 				(*p)->counter = ((*p)->counter >> 1) +
 						(*p)->priority;
+	}
+
+	/*判断current与next是不是一个进程，如果不是则next置为R，如果不是并且当前进程没运行完时间片到了 那么置其为J*/
+	if(current->pid != task[next]->pid)
+	{
+		if(current->state == TASK_RUNNING)
+		{
+			fprintk(3,"%d\tJ\t%d\n",current->pid,jiffies);
+		}
+		fprintk(3,"%d\tR\t%d\n",task[next]->pid,jiffies);
 	}
 	switch_to(pnext, _LDT(next));
 }
@@ -145,6 +159,16 @@ void schedule(void)
 int sys_pause(void)
 {
 	current->state = TASK_INTERRUPTIBLE;
+	/*如果 current->pid!=0则 阻塞态
+	*/  
+    /*
+	当schedule函数发现系统中没有可执行的任务时，
+	就会切换到0号任务（0号任务PID为0），而0号任务就会循环执行sys_pause，
+	将自己设置为可中断的阻塞态。理论上，该系统调用将导致进程进入睡眠状态，
+	直到收到一个用于终止进程或者促使进程调用的信号量。然而这些功能在0.11版本内核中没有没实现。
+	*/
+	if(current->pid != 0)
+	fprintk(3,"%d\tW\t%d\n",current->pid,jiffies);
 	schedule();
 	return 0;
 }
@@ -160,9 +184,16 @@ void sleep_on(struct task_struct **p)
 	tmp = *p;
 	*p = current;
 	current->state = TASK_UNINTERRUPTIBLE;
+	/*current进入阻塞状态*/
+	fprintk(3,"%d\tW\t%d\n",current->pid,jiffies);
 	schedule();
+	/*唤醒以后从这里执行*/
 	if (tmp)
+		{
 		tmp->state=0;
+		/*tmp被唤醒 进入就绪态*/
+		fprintk(3,"%d\tJ\t%d\n",tmp->pid,jiffies);
+		}
 }
 
 void interruptible_sleep_on(struct task_struct **p)
@@ -176,20 +207,31 @@ void interruptible_sleep_on(struct task_struct **p)
 	tmp=*p;
 	*p=current;
 repeat:	current->state = TASK_INTERRUPTIBLE;
-	schedule();
-	if (*p && *p != current) {
+	/*current进入阻塞状态*/
+    fprintk(3,"%d\tW\t%d\n",current->pid,jiffies);
+	schedule(); 	
+	/*唤醒以后从这里执行*/
+	if (*p && *p != current) {/*因为是interruptible，唤醒的时候 可能不在队首，下面一句判断是不是信号唤醒 也就是是不是队首*/
 		(**p).state=0;
+		/*如果不是队首，即 从中间唤醒的话，唤醒队首p，自己睡眠*/
+		fprintk(3,"%d\tJ\t%d\n",(*p)->pid,jiffies);
 		goto repeat;
 	}
 	*p=NULL;
 	if (tmp)
-		tmp->state=0;
+		{
+			tmp->state=0;
+		/*tmp被唤醒 进入就绪态*/
+		fprintk(3,"%d\tJ\t%d\n",tmp->pid,jiffies);
+		}
 }
-
+/*wakeup只唤醒队首，其他交由sleep隐式链表去唤醒*/
 void wake_up(struct task_struct **p)
 {
 	if (p && *p) {
 		(**p).state=0;
+		/*唤醒进入就绪状态*/
+		fprintk(3,"%d\tJ\t%d\n",(*p)->pid,jiffies);
 		*p=NULL;
 	}
 }
