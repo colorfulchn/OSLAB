@@ -12,7 +12,7 @@
 
 # 关于TSS
 ------------
-![TSS](https://image.baidu.com/search/detail?ct=503316480&z=0&ipn=d&word=TSS%E7%BB%93%E6%9E%84&step_word=&hs=0&pn=17&spn=0&di=29510&pi=0&rn=1&tn=baiduimagedetail&is=0%2C0&istype=2&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=-1&cs=3743557637%2C4192097557&os=2657222472%2C3264107325&simid=4104034306%2C529928587&adpicid=0&lpn=0&ln=667&fr=&fmq=1584692936812_R&fm=result&ic=&s=undefined&hd=&latest=&copyright=&se=&sme=&tab=0&width=&height=&face=undefined&ist=&jit=&cg=&bdtype=11&oriquery=&objurl=http%3A%2F%2Fimg2020.cnblogs.com%2Fi-beta%2F1944278%2F202003%2F1944278-20200306084206795-1378113112.png&fromurl=ippr_z2C%24qAzdH3FAzdH3Fooo_z%26e3Bvgks52f_z%26e3Bv54AzdH3F3fzyxAzdH3FrAzdH3F8d9n800n_z%26e3Bip4s&gsm=12&rpstart=0&rpnum=0&islist=&querylist=&force=undefined)
+![TSS](https://img-blog.csdn.net/20170701171801683?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY2hlbjE1NDA1MjQwMTU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 + TSS对于上下文切换的速度太慢，所以本次实验的目的也是加快速度。
 
 # 关于PCB
