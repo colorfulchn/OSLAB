@@ -74,11 +74,25 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	struct task_struct *p;
 	int i;
 	struct file *f;
-	long *kernelstack
+	long *kernelstack;
 	p = (struct task_struct *) get_free_page();
 	if (!p)
 		return -EAGAIN;
+	task[nr] = p;
+	*p = *current;	/* NOTE! this doesn't copy the supervisor stack */
+	p->state = TASK_UNINTERRUPTIBLE;
+	p->pid = last_pid;
+	p->father = current->pid;
+	p->counter = p->priority;
+	p->signal = 0;
+	p->alarm = 0;
+	p->leader = 0;		/* process leadership doesn't inherit */
+	p->utime = p->stime = 0;
+	p->cutime = p->cstime = 0;
+	p->start_time = jiffies;
 
+	/*增加p新建状态*/
+	fprintk(3,"%d\tN\t%d\n",p->pid,jiffies);
 	kernelstack = (long *)(PAGE_SIZE + (long)p);
     *(--kernelstack) = ss & 0xffff;
     *(--kernelstack) = esp;
@@ -102,19 +116,6 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
     p->kernelstack = (long)kernelstack;
 
 
-	task[nr] = p;
-	*p = *current;	/* NOTE! this doesn't copy the supervisor stack */
-	p->state = TASK_UNINTERRUPTIBLE;
-	p->pid = last_pid;
-	p->father = current->pid;
-	p->counter = p->priority;
-	p->signal = 0;
-	p->alarm = 0;
-	p->leader = 0;		/* process leadership doesn't inherit */
-	p->utime = p->stime = 0;
-	p->cutime = p->cstime = 0;
-	p->start_time = jiffies;
-	
 	if (last_task_used_math == current)
 		__asm__("clts ; fnsave %0"::"m" (p->tss.i387));
 	if (copy_mem(nr,p)) {
@@ -134,6 +135,9 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	set_tss_desc(gdt+(nr<<1)+FIRST_TSS_ENTRY,&(p->tss));
 	set_ldt_desc(gdt+(nr<<1)+FIRST_LDT_ENTRY,&(p->ldt));
 	p->state = TASK_RUNNING;	/* do this last, just in case */
+
+	/*增加p就绪状态*/
+	fprintk(3,"%d\tJ\t%d\n",p->pid,jiffies);
 	return last_pid;
 }
 
