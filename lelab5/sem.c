@@ -48,7 +48,7 @@ sem_t *sys_sem_open(const char *name,unsigned int value)
         cnt++;
     }
 
-    if(isexit=1)
+    if(isexist=1)
     {
         p=(sem_t*)(&semtable[target]);
     }
@@ -107,10 +107,10 @@ int sys_sem_unlink(const char *name)
 
     if(isexist=0)
     {
-        return -1
+        return -1;
     }
 
-    if(isexit=1)
+    if(isexist=1)
     {
        int tmp=0;
         for(tmp=i;tmp<=cnt;tmp++)
