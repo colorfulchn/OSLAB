@@ -9,53 +9,49 @@
 #include <asm/io.h>
 
 sem_t semtable[SEMTABLE_LEN];
-int cnt = 0;
+int cnt=0;
 
 sem_t *sys_sem_open(const char *name,unsigned int value)
 {
-    char kernelname[100];   /* 应该足够大了 */
-    int isExist = 0;
-    int i=0;
-    int name_cnt=0;
-    while( get_fs_byte(name+name_cnt) != '\0')
-    name_cnt++;
-    if(name_cnt>SEM_NAME_LEN)
-    return NULL;
-    for(i=0;i<name_cnt;i++)
-     /* 从用户态复制到内核态 */
-    kernelname[i]=get_fs_byte(name+i);
-    int name_len = strlen(kernelname);
-    int sem_name_len =0;
+    int i,j,max,target;
+    int isexist=0;
+    char msg[100];
     sem_t *p=NULL;
-    for(i=0;i<cnt;i++)
+    for(i=0;i<100;i++)
     {
-        sem_name_len = strlen(semtable[i].name);
-        if(sem_name_len == name_len)
+        msg[i]=get_fs_byte(name+i);
+        if(msg[i]=='\0') 
         {
-                if( !strcmp(kernelname,semtable[i].name) )
-                {
-                    isExist = 1;
-                    break;
-                }
+            max=i;
+            break;
         }
     }
-    if(isExist == 1)
+
+    if(max > SEM_NAME_LEN)
+    return NULL;
+
+    for(j=0;j<cnt;j++)
     {
-        p=(sem_t*)(&semtable[i]);
-        /*printk("find previous name!\n");*/
-    }
-    else
-    {
-        i=0;
-        for(i=0;i<name_len;i++)
+        if( !strcmp(msg,semtable[j].name) )
         {
-            semtable[cnt].name[i]=kernelname[i];
+            isexist=1;
+            target=j;
+            break;
         }
-        semtable[cnt].value = value;
+    }
+
+    if(isexist=0)
+    {
+        strcpy(semtable[cnt].name,msg);
         p=(sem_t*)(&semtable[cnt]);
-         /*printk("creat name!\n");*/
+        semtable[cnt].value = value;
         cnt++;
-     }
+    }
+
+    if(isexit=1)
+    {
+        p=(sem_t*)(&semtable[target]);
+    }
     return p;
 }
 
@@ -69,9 +65,10 @@ int sys_sem_wait(sem_t *sem)
     sti();
     return 0;
 }
+
 int sys_sem_post(sem_t *sem)
 {
-    cli();
+     cli();
     sem->value++;
     if( (sem->value) <= 1)    /*小于0阻塞，只有为1时才唤醒，保证一次仅唤醒一个进程*/
         wake_up(&(sem->queue));
@@ -81,40 +78,44 @@ int sys_sem_post(sem_t *sem)
 
 int sys_sem_unlink(const char *name)
 {
-    char kernelname[100];   /* 应该足够大了 */
-    int isExist = 0;
-    int i=0;
-    int name_cnt=0;
-    while( get_fs_byte(name+name_cnt) != '\0')
-            name_cnt++;
-    if(name_cnt>SEM_NAME_LEN)
-            return NULL;
-    for(i=0;i<name_cnt;i++)
-            kernelname[i]=get_fs_byte(name+i);
-    int name_len = strlen(name);
-    int sem_name_len =0;
-    for(i=0;i<cnt;i++)
+    int i,j,max,target;
+    int isexist=0;
+    char msg[100];
+    sem_t *p=NULL;
+    for(i=0;i<100;i++)
     {
-        sem_name_len = strlen(semtable[i].name);
-        if(sem_name_len == name_len)
+        msg[i]=get_fs_byte(name+i);
+        if(msg[i]=='\0') 
         {
-                if( !strcmp(kernelname,semtable[i].name))
-                {
-                        isExist = 1;
-                        break;
-                }
+            max=i;
+            break;
         }
     }
-    if(isExist == 1)
+
+    if(max > SEM_NAME_LEN)
+    return NULL;
+
+    for(j=0;j<cnt;j++)
     {
-        int tmp=0;
-        for(tmp=i;tmp<=cnt;tmp++)
+        if( !strcmp(msg,semtable[j].name) )
         {
-            semtable[tmp]=semtable[tmp+1];
+            isexist=1;
+            target=j;
+            break;
         }
-        cnt = cnt-1;
+    }
+
+    if(isexist=0)
+    {
+        return -1
+    }
+
+    if(isexit=1)
+    {
+       int tmp=0;
+        for(tmp=i;tmp<=cnt;tmp++)
+        semtable[tmp]=semtable[tmp+1];
+        cnt--;
         return 0;
     }
-    else
-        return -1;
 }
