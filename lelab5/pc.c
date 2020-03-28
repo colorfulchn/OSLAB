@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
                         read(fo, (char *)&item_used, sizeof(item_used));
                     }
 
-                    printf("pid %d:\tconsumer %d consumes item %d\n", pid, NR_CONSUMERS-i+1, item_used);
+                    printf("pid %d:\tconsumer %d consumes item %d\n", pid, NR_CONSUMERS-i, item_used);
                     fflush(stdout);
 
                     sem_post(empty);    /* 唤醒生产者进程 */

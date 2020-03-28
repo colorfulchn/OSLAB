@@ -129,10 +129,23 @@
 #define __NR_ssetmask	69
 #define __NR_setreuid	70
 #define __NR_setregid	71
-#define __NR_sem_open   72 
+#define __NR_sem_open   72  /* 实验5 */
 #define __NR_sem_wait   73
 #define __NR_sem_post   74
 #define __NR_sem_unlink 75
+#define __NR_shmget     76 /* 实验6 */
+#define __NR_shmat      77
+
+#define SHM_SIZE 64 
+typedef struct shm_ds
+{
+    unsigned int key;
+    unsigned int size;
+    unsigned long page;
+}shm_ds;
+
+int sys_shmget(unsigned int key,size_t size);
+void * sys_shmat(int shmid);
 
 #define _syscall0(type,name) \
 type name(void) \
