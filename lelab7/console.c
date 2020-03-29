@@ -451,7 +451,6 @@ void con_write(struct tty_struct * tty)
 	while (nr--) {
 		GETCH(tty->write_q,c);
 		switch(state) {
-			case 0:
 				case 0:
 				if (c>31 && c<127) {
 					if (x>=video_num_columns) {
